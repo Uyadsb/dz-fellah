@@ -1,5 +1,9 @@
 from rest_framework import status, viewsets
+<<<<<<< HEAD
 from rest_framework.decorators import action
+=======
+from rest_framework.decorators import action, permission_classes, authentication_classes
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
@@ -8,6 +12,7 @@ from .serializers import (
     ProductListSerializer,
     ProductDetailSerializer,
     ProductCreateUpdateSerializer,
+<<<<<<< HEAD
     SeasonalBasketSerializer,
     ClientSubscriptionSerializer,
     ProducerInfoSerializer,
@@ -16,6 +21,12 @@ from .serializers import (
 from users.authentication import CustomJWTAuthentication
 from users.permissions import IsProducer
 from .seasonal_utils import is_product_in_season
+=======
+    ProducerInfoSerializer
+)
+from users.authentication import CustomJWTAuthentication
+from users.permissions import IsProducer
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 class ProductViewSet(viewsets.ViewSet):
@@ -29,6 +40,7 @@ class ProductViewSet(viewsets.ViewSet):
     def list(self, request):
         """
         GET /api/products/
+<<<<<<< HEAD
         Homepage products list with filters and search.
         """
         # Get all filters
@@ -37,6 +49,13 @@ class ProductViewSet(viewsets.ViewSet):
         is_anti_gaspi_bool = is_anti_gaspi.lower() == 'true' if is_anti_gaspi else None
         search = request.query_params.get('search')
         producer_search = request.query_params.get('producer_search')
+=======
+        Homepage products list with filters.
+        """
+        product_type = request.query_params.get('product_type')
+        is_anti_gaspi = request.query_params.get('is_anti_gaspi')
+        is_anti_gaspi_bool = is_anti_gaspi.lower() == 'true' if is_anti_gaspi else None
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
         
         limit = request.query_params.get('limit', 20)
         try:
@@ -44,6 +63,7 @@ class ProductViewSet(viewsets.ViewSet):
         except:
             limit = 20
         
+<<<<<<< HEAD
         # Use advanced search if search parameters provided
         if search or producer_search:
             products = queries.search_products_advanced(
@@ -73,6 +93,19 @@ class ProductViewSet(viewsets.ViewSet):
             'filters': {
                 'search': search,
                 'producer_search': producer_search,
+=======
+        products = queries.get_home_products(
+            product_type=product_type,
+            is_anti_gaspi=is_anti_gaspi_bool,
+            limit=limit
+        )
+        
+        serializer = ProductListSerializer(products, many=True)
+        
+        return Response({
+            'count': len(serializer.data),
+            'filters': {
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
                 'product_type': product_type,
                 'is_anti_gaspi': is_anti_gaspi,
                 'limit': limit
@@ -91,7 +124,10 @@ class ProductViewSet(viewsets.ViewSet):
             return Response({
                 'error': 'Product not found'
             }, status=status.HTTP_404_NOT_FOUND)
+<<<<<<< HEAD
         product['is_seasonal'] = is_product_in_season(product['name'])
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
         
         # Structure producer data
         producer_data = {
@@ -238,6 +274,7 @@ class ProductViewSet(viewsets.ViewSet):
             },
             'products': serializer.data
         })
+<<<<<<< HEAD
     @action(detail=False, methods=['get'], url_path='seasonal')
     def seasonal_prodyccts(self, request):
 
@@ -268,6 +305,8 @@ class ProductViewSet(viewsets.ViewSet):
 
 
    
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 class MyProductViewSet(viewsets.ViewSet):
@@ -313,14 +352,21 @@ class MyProductViewSet(viewsets.ViewSet):
         serializer = ProductCreateUpdateSerializer(data=request.data)
         
         if serializer.is_valid():
+<<<<<<< HEAD
             # Get photo_url directly - save base64 as-is
             photo_url = serializer.validated_data.get('photo_url')
             
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             product = queries.create_product(
                 producer_id=request.user.producer_profile.id,
                 name=serializer.validated_data['name'],
                 description=serializer.validated_data.get('description'),
+<<<<<<< HEAD
                 photo_url=photo_url,  # Save base64 directly
+=======
+                photo_url=serializer.validated_data.get('photo_url'),
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
                 sale_type=serializer.validated_data['sale_type'],
                 price=serializer.validated_data['price'],
                 stock=serializer.validated_data['stock'],
@@ -376,15 +422,22 @@ class MyProductViewSet(viewsets.ViewSet):
         serializer = ProductCreateUpdateSerializer(data=request.data)
         
         if serializer.is_valid():
+<<<<<<< HEAD
             # Get photo_url directly - save base64 as-is
             photo_url = serializer.validated_data.get('photo_url')
             
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             updated = queries.update_product(
                 product_id=pk,
                 producer_id=request.user.producer_profile.id,
                 name=serializer.validated_data['name'],
                 description=serializer.validated_data.get('description'),
+<<<<<<< HEAD
                 photo_url=photo_url,  # Save base64 directly
+=======
+                photo_url=serializer.validated_data.get('photo_url'),
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
                 sale_type=serializer.validated_data['sale_type'],
                 price=serializer.validated_data['price'],
                 stock=serializer.validated_data['stock'],
@@ -417,9 +470,12 @@ class MyProductViewSet(viewsets.ViewSet):
         serializer = ProductCreateUpdateSerializer(data=request.data, partial=True)
         
         if serializer.is_valid():
+<<<<<<< HEAD
             # Photo URL is already in serializer.validated_data as base64 if provided
             # No conversion needed
             
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             updated = queries.partial_update_product(
                 product_id=pk,
                 producer_id=request.user.producer_profile.id,
@@ -440,7 +496,10 @@ class MyProductViewSet(viewsets.ViewSet):
         DELETE /api/my-products/{id}/
         Delete a product.
         """
+<<<<<<< HEAD
         # No need to delete image files - base64 is in database
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
         product_name = queries.delete_product(
             pk,
             request.user.producer_profile.id
@@ -478,6 +537,7 @@ class MyProductViewSet(viewsets.ViewSet):
                 'name': result['name'],
                 'is_anti_gaspi': result['is_anti_gaspi']
             }
+<<<<<<< HEAD
         })
 
 
@@ -1267,3 +1327,6 @@ class MySubscriptionViewSet(viewsets.ViewSet):
         return Response({
             'error': 'Subscription not found'
         }, status=status.HTTP_404_NOT_FOUND)
+=======
+        })
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b

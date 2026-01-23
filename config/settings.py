@@ -6,12 +6,15 @@ PostgreSQL Configuration
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
+<<<<<<< HEAD
 import os
 import dj_database_url
 
 print("=" * 50)
 print("DATABASE_URL:", os.environ.get('DATABASE_URL', 'NOT SET!'))
 print("=" * 50)
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,6 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ==============================================================================
 
 # SECURITY WARNING: keep the secret key used in production secret!
+<<<<<<< HEAD
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-fallback-railway-temp-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default='False', cast=bool)
@@ -40,6 +44,17 @@ if RAILWAY_STATIC_URL:
 RAILWAY_PUBLIC_DOMAIN = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
 if RAILWAY_PUBLIC_DOMAIN and RAILWAY_PUBLIC_DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
+=======
+SECRET_KEY = config('SECRET_KEY')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = config('DEBUG')
+
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    cast=lambda v: [s.strip() for s in v.split(',')]
+)
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 
@@ -58,7 +73,11 @@ INSTALLED_APPS = [
     
     # Third party apps
     'rest_framework',
+<<<<<<< HEAD
     
+=======
+    'rest_framework_simplejwt',
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     'corsheaders',
     # 'drf_yasg',  # API documentation (optional)
     
@@ -71,7 +90,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+<<<<<<< HEAD
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     'corsheaders.middleware.CorsMiddleware',  # CORS - must be before CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -129,6 +151,7 @@ DATABASES = {
     }
 }'''
 
+<<<<<<< HEAD
 # Railway provides DATABASE_URL, use it if available
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
@@ -157,6 +180,24 @@ else:
             'CONN_MAX_AGE': 600,
         }
     }
+=======
+import os
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'dzfellah'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'amdjed'),
+        'HOST': os.environ.get('DB_HOST', 'dzfellah-db'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+        },
+        'CONN_MAX_AGE': 600,
+    }
+}
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 # ==============================================================================
@@ -208,11 +249,16 @@ LANGUAGES = [
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+<<<<<<< HEAD
 # WhiteNoise settings for serving static files in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+=======
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 # ==============================================================================
@@ -228,12 +274,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     # Authentication
+<<<<<<< HEAD
     #'DEFAULT_AUTHENTICATION_CLASSES': [
      #   'rest_framework_simplejwt.authentication.JWTAuthentication',],
     
     # Permissions (default to requiring authentication)
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
+=======
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    
+    # Permissions (default to requiring authentication)
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     ],
     
     # Pagination
@@ -293,6 +349,7 @@ SIMPLE_JWT = {
 # ==============================================================================
 
 # Allow frontend to make requests to backend
+<<<<<<< HEAD
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:5173',
@@ -306,6 +363,14 @@ CORS_ALLOWED_ORIGINS = [
 FRONTEND_URL = os.environ.get('FRONTEND_URL', '')
 if FRONTEND_URL and FRONTEND_URL not in CORS_ALLOWED_ORIGINS:
     CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+=======
+CORS_ALLOWED_ORIGINS = config(
+    'CORS_ALLOWED_ORIGINS',
+    default='http://127.0.0.1:3000',
+    cast=lambda v: [s.strip() for s in v.split(',')]
+)
+
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
@@ -383,8 +448,12 @@ LOGGING = {
 
 if not DEBUG:
     # HTTPS
+<<<<<<< HEAD
     #SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+=======
+    SECURE_SSL_REDIRECT = True
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     

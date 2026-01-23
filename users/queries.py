@@ -20,13 +20,21 @@ def dict_fetchone(cursor):
 # ============================================
 
 def get_user_by_email(email):
+<<<<<<< HEAD
     """Get user by email with profile data - SINGLE QUERY."""
+=======
+    """
+    Get user by email with profile data - SINGLE QUERY.
+    PostgreSQL: Uses LEFT JOIN for optional relationships.
+    """
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     sql = """
         SELECT 
             u.id, u.email, u.user_type, u.first_name, u.last_name,
             u.phone, u.is_active, u.is_verified, u.created_at, u.updated_at,
             u.password,
             p.id as producer_id, p.shop_name, p.description as producer_description,
+<<<<<<< HEAD
             p.photo_url as producer_photo, 
             p.avatar as producer_avatar,
             p.address as producer_address,
@@ -35,6 +43,12 @@ def get_user_by_email(email):
             c.id as client_id, 
             c.avatar as client_avatar,
             c.address as client_address,
+=======
+            p.photo_url as producer_photo, p.address as producer_address,
+            p.city as producer_city, p.wilaya as producer_wilaya,
+            p.methods, p.is_bio_certified, p.created_at as producer_created_at,
+            c.id as client_id, c.address as client_address,
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             c.city as client_city, c.wilaya as client_wilaya,
             c.created_at as client_created_at
         FROM users u
@@ -49,12 +63,20 @@ def get_user_by_email(email):
 
 
 def get_user_by_id(user_id):
+<<<<<<< HEAD
     """Get user by ID with profile data - SINGLE QUERY."""
+=======
+    """
+    Get user by ID with profile data - SINGLE QUERY.
+    PostgreSQL: Uses LEFT JOIN for optional relationships.
+    """
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     sql = """
         SELECT 
             u.id, u.email, u.user_type, u.first_name, u.last_name,
             u.phone, u.is_active, u.is_verified, u.created_at, u.updated_at,
             p.id as producer_id, p.shop_name, p.description as producer_description,
+<<<<<<< HEAD
             p.photo_url as producer_photo,
             p.avatar as producer_avatar,
             p.address as producer_address,
@@ -63,6 +85,12 @@ def get_user_by_id(user_id):
             c.id as client_id,
             c.avatar as client_avatar,
             c.address as client_address,
+=======
+            p.photo_url as producer_photo, p.address as producer_address,
+            p.city as producer_city, p.wilaya as producer_wilaya,
+            p.methods, p.is_bio_certified, p.created_at as producer_created_at,
+            c.id as client_id, c.address as client_address,
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             c.city as client_city, c.wilaya as client_wilaya,
             c.created_at as client_created_at
         FROM users u
@@ -75,6 +103,10 @@ def get_user_by_id(user_id):
         cursor.execute(sql, [user_id])
         return dict_fetchone(cursor)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 def email_exists(email):
     """
     Check if email already exists.
@@ -189,7 +221,38 @@ def get_producer_profile_by_id(producer_id):
         return dict_fetchone(cursor)
 
 
+<<<<<<< HEAD
 
+=======
+def update_producer_profile(user_id, updates):
+    """
+    Update producer profile with provided fields.
+    PostgreSQL: Dynamic UPDATE with RETURNING.
+    """
+    if not updates:
+        return get_producer_profile(user_id)
+    
+    set_clauses = []
+    params = []
+    
+    for field, value in updates.items():
+        set_clauses.append(f"{field} = %s")
+        params.append(value)
+    
+    params.append(user_id)
+    
+    sql = f"""
+        UPDATE producers SET
+            {', '.join(set_clauses)}
+        WHERE user_id = %s
+        RETURNING id, user_id, shop_name, description, photo_url, address,
+                  city, wilaya, methods, is_bio_certified, created_at, updated_at
+    """
+    
+    with connection.cursor() as cursor:
+        cursor.execute(sql, params)
+        return dict_fetchone(cursor)
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 # ============================================
@@ -227,13 +290,47 @@ def get_client_profile(user_id):
         return dict_fetchone(cursor)
 
 
+<<<<<<< HEAD
+=======
+def update_client_profile(user_id, updates):
+    """
+    Update client profile with provided fields.
+    PostgreSQL: Dynamic UPDATE with RETURNING.
+    """
+    if not updates:
+        return get_client_profile(user_id)
+    
+    set_clauses = []
+    params = []
+    
+    for field, value in updates.items():
+        set_clauses.append(f"{field} = %s")
+        params.append(value)
+    
+    params.append(user_id)
+    
+    sql = f"""
+        UPDATE clients SET
+            {', '.join(set_clauses)}
+        WHERE user_id = %s
+        RETURNING id, user_id, address, city, wilaya, created_at, updated_at
+    """
+    
+    with connection.cursor() as cursor:
+        cursor.execute(sql, params)
+        return dict_fetchone(cursor)
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 # ============================================
 # LIST QUERIES
 # ============================================
 
+<<<<<<< HEAD
 def get_all_producers(city=None, wilaya=None, is_bio_certified=None, search=None):  # ✅ ADD search
+=======
+def get_all_producers(city=None, wilaya=None, is_bio_certified=None):
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     """
     Get all producers with optional filters - SINGLE QUERY.
     PostgreSQL: Uses ILIKE for case-insensitive search.
@@ -250,11 +347,14 @@ def get_all_producers(city=None, wilaya=None, is_bio_certified=None, search=None
     """
     params = []
     
+<<<<<<< HEAD
     # ✅ ADD THIS
     if search:
         sql += " AND p.shop_name ILIKE %s"
         params.append(f'%{search}%')
     
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     if city:
         sql += " AND p.city ILIKE %s"
         params.append(f'%{city}%')
@@ -273,6 +373,10 @@ def get_all_producers(city=None, wilaya=None, is_bio_certified=None, search=None
         cursor.execute(sql, params)
         return dict_fetchall(cursor)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 def get_all_clients(city=None, wilaya=None):
     """
     Get all clients with optional filters - SINGLE QUERY.
@@ -342,7 +446,10 @@ def structure_user_data(user_row):
             'description': user_row.get('producer_description'),
             'photo_url': user_row.get('producer_photo'),
             'address': user_row.get('producer_address'),
+<<<<<<< HEAD
             'avatar': user_row.get('producer_avatar'),
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             'city': user_row.get('producer_city'),
             'wilaya': user_row.get('producer_wilaya'),
             'methods': user_row.get('methods'),
@@ -356,7 +463,10 @@ def structure_user_data(user_row):
     if user_row.get('client_id'):
         user_data['client_profile'] = {
             'id': user_row['client_id'],
+<<<<<<< HEAD
             'avatar': user_row.get('client_avatar'), 
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             'address': user_row.get('client_address'),
             'city': user_row.get('client_city'),
             'wilaya': user_row.get('client_wilaya'),
@@ -365,6 +475,7 @@ def structure_user_data(user_row):
     else:
         user_data['client_profile'] = None
     
+<<<<<<< HEAD
     return user_data
 # Add these functions to users/queries.py
 
@@ -445,3 +556,6 @@ def update_producer_profile(user_id, **kwargs):
     
     with connection.cursor() as cursor:
         cursor.execute(sql, params)
+=======
+    return user_data
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b

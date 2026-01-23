@@ -40,7 +40,10 @@ class SubOrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     total = serializers.SerializerMethodField()
     producer_details = serializers.SerializerMethodField()
+<<<<<<< HEAD
     client_details = serializers.SerializerMethodField()
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     
     class Meta:
         model = SubOrder
@@ -49,7 +52,10 @@ class SubOrderSerializer(serializers.ModelSerializer):
             'sub_order_number',
             'producer_id',
             'producer_details',
+<<<<<<< HEAD
             'client_details',
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             'status',
             'subtotal',
             'total',
@@ -86,6 +92,7 @@ class SubOrderSerializer(serializers.ModelSerializer):
             'phone': producer.get('phone'),
             'address': producer.get('address'),
         }
+<<<<<<< HEAD
     
     def get_client_details(self, obj):
         """Détails du client depuis la commande parent."""
@@ -123,6 +130,8 @@ class SubOrderSerializer(serializers.ModelSerializer):
                 'phone': '',
                 'avatar': None
             }
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 class OrderSerializer(serializers.ModelSerializer):

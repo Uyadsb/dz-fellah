@@ -241,19 +241,26 @@ class OrderViewSet(viewsets.ViewSet):
             }, status=status.HTTP_404_NOT_FOUND)
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 class ProducerOrderViewSet(viewsets.ViewSet):
     """
     ViewSet pour gérer les commandes (côté producteur).
     Les producteurs ne voient que leurs sous-commandes.
+<<<<<<< HEAD
     
     
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     """
     
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsAuthenticated, IsProducer]
     
+<<<<<<< HEAD
     def get_producer_id(self, request):
         """
          Safely get producer ID with proper error handling.
@@ -271,12 +278,15 @@ class ProducerOrderViewSet(viewsets.ViewSet):
         # Safe to access ID now
         return producer_profile.id
     
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     @action(detail=False, methods=['get'])
     def my_orders(self, request):
         """
         GET /api/producer-orders/my_orders/
         Liste toutes les sous-commandes du producteur.
         """
+<<<<<<< HEAD
         # ✅ FIXED: Check producer_id safely
         producer_id = self.get_producer_id(request)
         
@@ -287,6 +297,10 @@ class ProducerOrderViewSet(viewsets.ViewSet):
         
         sub_orders = SubOrder.objects.filter(
             producer_id=producer_id
+=======
+        sub_orders = SubOrder.objects.filter(
+            producer_id=request.user.producer_profile.id
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
         ).select_related('parent_order').order_by('-created_at')
         
         serializer = SubOrderSerializer(sub_orders, many=True)
@@ -301,6 +315,7 @@ class ProducerOrderViewSet(viewsets.ViewSet):
         GET /api/producer-orders/{id}/
         Détails d'une sous-commande spécifique.
         """
+<<<<<<< HEAD
         # ✅ FIXED: Check producer_id safely
         producer_id = self.get_producer_id(request)
         
@@ -313,6 +328,12 @@ class ProducerOrderViewSet(viewsets.ViewSet):
             sub_order = SubOrder.objects.get(
                 id=pk,
                 producer_id=producer_id
+=======
+        try:
+            sub_order = SubOrder.objects.get(
+                id=pk,
+                producer_id=request.user.producer_profile.id
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             )
             serializer = SubOrderSerializer(sub_order)
             
@@ -337,6 +358,7 @@ class ProducerOrderViewSet(viewsets.ViewSet):
             "producer_notes": "Commande prête demain"
         }
         """
+<<<<<<< HEAD
         # ✅ FIXED: Check producer_id safely
         producer_id = self.get_producer_id(request)
         
@@ -345,6 +367,8 @@ class ProducerOrderViewSet(viewsets.ViewSet):
                 'error': 'Profil producteur requis'
             }, status=status.HTTP_403_FORBIDDEN)
         
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
         serializer = UpdateSubOrderStatusSerializer(data=request.data)
         
         if not serializer.is_valid():
@@ -353,7 +377,11 @@ class ProducerOrderViewSet(viewsets.ViewSet):
         try:
             sub_order = SubOrder.objects.get(
                 id=pk,
+<<<<<<< HEAD
                 producer_id=producer_id
+=======
+                producer_id=request.user.producer_profile.id
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             )
             
             # Mettre à jour le statut
@@ -388,6 +416,7 @@ class ProducerOrderViewSet(viewsets.ViewSet):
             "quantity_actual": 2.3
         }
         """
+<<<<<<< HEAD
         # ✅ FIXED: Check producer_id safely
         producer_id = self.get_producer_id(request)
         
@@ -400,6 +429,12 @@ class ProducerOrderViewSet(viewsets.ViewSet):
             sub_order = SubOrder.objects.get(
                 id=pk,
                 producer_id=producer_id
+=======
+        try:
+            sub_order = SubOrder.objects.get(
+                id=pk,
+                producer_id=request.user.producer_profile.id
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             )
             
             order_item = OrderItem.objects.get(id=item_id, sub_order=sub_order)

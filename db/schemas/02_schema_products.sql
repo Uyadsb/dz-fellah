@@ -39,6 +39,7 @@ CREATE INDEX idx_products_type_anti_gaspi ON products(product_type, is_anti_gasp
 CREATE TRIGGER update_products_updated_at
     BEFORE UPDATE ON products
     FOR EACH ROW
+<<<<<<< HEAD
     EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================
@@ -171,3 +172,6 @@ WHERE u.user_type = 'producer'
 GROUP BY u.id, u.first_name, u.last_name;
 
 --
+=======
+    EXECUTE FUNCTION update_updated_at_column();
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b

@@ -398,6 +398,7 @@ def get_producer_info(producer_id):
 def get_anti_gaspi_eligible_products():
     """
     Get products eligible for anti-gaspi discount.
+<<<<<<< HEAD
     
     UPDATED RULES: 
     - Perishable product types: Vegetables, Fruits, Dairy, Meat
@@ -405,16 +406,27 @@ def get_anti_gaspi_eligible_products():
     - Stock > 3
     - Not already anti-gaspi
     
+=======
+    Rules: fresh products, >48h old, stock > 3, not already anti-gaspi.
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     PostgreSQL: Uses CURRENT_DATE for date comparison.
     """
     sql = """
         SELECT 
+<<<<<<< HEAD
             p.id, p.name, p.product_type, p.harvest_date, p.stock, p.price,
+=======
+            p.id, p.name, p.harvest_date, p.stock, p.price,
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             pr.shop_name,
             CURRENT_DATE - p.harvest_date AS days_since_harvest
         FROM products p
         INNER JOIN producers pr ON p.producer_id = pr.id
+<<<<<<< HEAD
         WHERE p.product_type IN ('Vegetables', 'Fruits', 'Dairy', 'Meat')
+=======
+        WHERE p.product_type = 'fresh'
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             AND p.harvest_date IS NOT NULL
             AND p.stock > 3
             AND CURRENT_DATE - p.harvest_date >= 2
@@ -430,18 +442,26 @@ def get_anti_gaspi_eligible_products():
 def mark_products_as_anti_gaspi():
     """
     Automatically mark eligible products as anti-gaspi.
+<<<<<<< HEAD
     
     UPDATED: Works with Vegetables, Fruits, Dairy, Meat
     
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     Returns the number of products marked.
     PostgreSQL: Uses rowcount to get affected rows.
     """
     sql = """
         UPDATE products
+<<<<<<< HEAD
         SET
             is_anti_gaspi = TRUE
             price = ROUND(price * 0.5, 2)
         WHERE product_type IN ('Vegetables', 'Fruits', 'Dairy', 'Meat')
+=======
+        SET is_anti_gaspi = TRUE
+        WHERE product_type = 'fresh'
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             AND harvest_date IS NOT NULL
             AND stock > 3
             AND CURRENT_DATE - harvest_date >= 2
@@ -471,6 +491,7 @@ def get_anti_gaspi_price(product_id):
     
     with connection.cursor() as cursor:
         cursor.execute(sql, [product_id])
+<<<<<<< HEAD
         return dict_fetchone(cursor)
 
 
@@ -911,3 +932,6 @@ def process_weekly_deliveries():
             cursor.execute(update_sql, [[row[0] for row in created]])
         
         return len(created)
+=======
+        return dict_fetchone(cursor)
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b

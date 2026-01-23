@@ -7,6 +7,7 @@ class ProductListSerializer(serializers.Serializer):
     
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=255)
+<<<<<<< HEAD
     photo_url = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     sale_type = serializers.ChoiceField(choices=['unit', 'weight'])
@@ -15,11 +16,21 @@ class ProductListSerializer(serializers.Serializer):
     'Vegetables', 'Fruits', 'Dairy', 'Oils', 
     'Honey', 'Grains', 'Meat', 'Other'
 ])
+=======
+    photo_url = serializers.CharField(max_length=500, allow_null=True, required=False)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    sale_type = serializers.ChoiceField(choices=['unit', 'weight'])
+    stock = serializers.DecimalField(max_digits=10, decimal_places=2)
+    product_type = serializers.ChoiceField(choices=['fresh', 'dry'])
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     is_anti_gaspi = serializers.BooleanField()
     harvest_date = serializers.DateField(allow_null=True, required=False)
     producer_id = serializers.IntegerField(read_only=True)
     producer_name = serializers.CharField(read_only=True)
+<<<<<<< HEAD
     is_seasonal = serializers.BooleanField(required=False)
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 class ProducerInfoSerializer(serializers.Serializer):
@@ -43,6 +54,7 @@ class ProductDetailSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=255)
     description = serializers.CharField(allow_null=True, required=False)
+<<<<<<< HEAD
     photo_url = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     sale_type = serializers.ChoiceField(choices=['unit', 'weight'])
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -51,13 +63,25 @@ class ProductDetailSerializer(serializers.Serializer):
     'Vegetables', 'Fruits', 'Dairy', 'Oils', 
     'Honey', 'Grains', 'Meat', 'Other'
 ])
+=======
+    photo_url = serializers.CharField(max_length=500, allow_null=True, required=False)
+    sale_type = serializers.ChoiceField(choices=['unit', 'weight'])
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    stock = serializers.DecimalField(max_digits=10, decimal_places=2)
+    product_type = serializers.ChoiceField(choices=['fresh', 'dry'])
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     harvest_date = serializers.DateField(allow_null=True, required=False)
     is_anti_gaspi = serializers.BooleanField()
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
+<<<<<<< HEAD
     is_seasonal = serializers.BooleanField(required=False)
     
     
+=======
+    
+    # Producer info (populated manually in view)
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     producer = ProducerInfoSerializer(read_only=True)
 
 
@@ -66,6 +90,7 @@ class ProductCreateUpdateSerializer(serializers.Serializer):
     
     name = serializers.CharField(max_length=255)
     description = serializers.CharField(allow_null=True, required=False, allow_blank=True)
+<<<<<<< HEAD
     photo_url = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     sale_type = serializers.ChoiceField(choices=['unit', 'weight'])
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -74,6 +99,13 @@ class ProductCreateUpdateSerializer(serializers.Serializer):
     'Vegetables', 'Fruits', 'Dairy', 'Oils', 
     'Honey', 'Grains', 'Meat', 'Other'
 ])
+=======
+    photo_url = serializers.CharField(max_length=500, allow_null=True, required=False, allow_blank=True)
+    sale_type = serializers.ChoiceField(choices=['unit', 'weight'])
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    stock = serializers.DecimalField(max_digits=10, decimal_places=2)
+    product_type = serializers.ChoiceField(choices=['fresh', 'dry'])
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
     harvest_date = serializers.DateField(allow_null=True, required=False)
     is_anti_gaspi = serializers.BooleanField(required=False, default=False)
     
@@ -88,6 +120,7 @@ class ProductCreateUpdateSerializer(serializers.Serializer):
         return value
     
     def validate(self, data):
+<<<<<<< HEAD
     # Optional: Add validation for fresh products (Vegetables, Fruits, Dairy)
      fresh_categories = ['Vegetables', 'Fruits', 'Dairy']
      if data.get('product_type') in fresh_categories and not data.get('harvest_date'):
@@ -155,3 +188,11 @@ class ClientSubscriptionSerializer(serializers.Serializer):
     wilaya = serializers.CharField(read_only=True, required=False)
     producer_banner = serializers.CharField(read_only=True, required=False, allow_blank=True, allow_null=True)
     product_count = serializers.IntegerField(read_only=True, required=False)
+=======
+        # If product is fresh, harvest_date should be provided
+        if data.get('product_type') == 'fresh' and not data.get('harvest_date'):
+            raise serializers.ValidationError({
+                'harvest_date': 'Harvest date is required for fresh products'
+            })
+        return data
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b

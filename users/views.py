@@ -4,7 +4,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import transaction
+<<<<<<< HEAD
 from .image_utils import save_base64_image, delete_image
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 from . import queries
 from .serializers import (
     RegisterProducerSerializer,
@@ -246,6 +249,7 @@ class UserViewSet(viewsets.ViewSet):
         }
         
         return Response(user_serialized)
+<<<<<<< HEAD
     
     @action(detail=False, methods=['patch'])
     def update_me(self, request):
@@ -362,6 +366,8 @@ class UserViewSet(viewsets.ViewSet):
 
 
 
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
 
 
 class ProducerViewSet(viewsets.ViewSet):
@@ -377,14 +383,20 @@ class ProducerViewSet(viewsets.ViewSet):
         GET /api/producers/
         List all producers with optional filters.
         """
+<<<<<<< HEAD
         search = request.query_params.get('search') 
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
         city = request.query_params.get('city')
         wilaya = request.query_params.get('wilaya')
         is_bio_certified = request.query_params.get('is_bio_certified')
         is_bio_certified_bool = is_bio_certified.lower() == 'true' if is_bio_certified else None
         
         producers = queries.get_all_producers(
+<<<<<<< HEAD
             search=search,
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
             city=city,
             wilaya=wilaya,
             is_bio_certified=is_bio_certified_bool
@@ -395,7 +407,10 @@ class ProducerViewSet(viewsets.ViewSet):
         return Response({
             'count': len(serializer.data),
             'filters': {
+<<<<<<< HEAD
                 'search': search,
+=======
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
                 'city': city,
                 'wilaya': wilaya,
                 'is_bio_certified': is_bio_certified
@@ -416,4 +431,8 @@ class ProducerViewSet(viewsets.ViewSet):
             }, status=status.HTTP_404_NOT_FOUND)
         
         serializer =ProducerProfileSerializer(producer)
+<<<<<<< HEAD
         return Response(serializer.data)
+=======
+        return Response(serializer.data)
+>>>>>>> 33f7a2d22d51c7734ecadb4759a1c8c2dc77ec6b
