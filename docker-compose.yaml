@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: dzfellah-db
+    restart: always
+    environment:
+      POSTGRES_DB: dzfellah
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: amdjed
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dzfellah-web
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/usr/local/dzfellah
+    ports:
+      - "8000:8000"
+    environment:
+      SECRET_KEY: django-insecure-change-this-to-random-string
+      DEBUG: 'True'
+      DB_NAME: dzfellah
+      DB_USER: postgres
+      DB_PASSWORD: amdjed
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

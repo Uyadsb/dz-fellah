@@ -1,0 +1,17 @@
+# virtualization
+.env
+
+# github 
+.git/
+.gitignore
+
+__pycache__/
+*.pyc
+
+# vs code
+.vscode/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore

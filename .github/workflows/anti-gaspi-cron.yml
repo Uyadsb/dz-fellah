@@ -1,0 +1,18 @@
+name: Anti-Gaspi Daily Update
+
+on:
+  schedule:
+    - cron: '0 23 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-anti-gaspi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Anti-Gaspi Endpoint
+        run: |
+          curl -X POST \
+            -H "X-Cron-Secret: ${{ secrets.CRON_SECRET_TOKEN }}" \
+            https://web-production-2cdc7.up.railway.app/api/cron/anti-gaspi/
+
+

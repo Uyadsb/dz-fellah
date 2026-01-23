@@ -1,0 +1,1194 @@
+openapi: 3.0.3
+info:
+  title: DZ-Fellah API
+  description: |
+    API documentation for DZ-Fellah platform - connecting Algerian farmers with consumers.
+    
+    ## Features
+    - User authentication (JWT-based)
+    - Producer and Client registration
+    - Product management
+    - Anti-gaspi (anti-waste) system
+    - Producer shop listings
+    
+    ## Authentication
+    Most endpoints require JWT authentication. Include the token in the Authorization header:
+    ```
+    Authorization: Bearer <your_token>
+    ```
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+  - url: https://api.dzfellah.dz/api
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User registration and login operations
+  - name: Users
+    description: User profile operations
+  - name: Producers
+    description: Public producer listings
+  - name: Products
+    description: Public product operations
+  - name: My Products
+    description: Producer product management (authenticated)
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error message"
+
+    ValidationError:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+
+    ProducerProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        shop_name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          maxLength: 100
+          nullable: true
+        wilaya:
+          type: string
+          maxLength: 100
+          nullable: true
+        methods:
+          type: string
+          nullable: true
+          description: Delivery/pickup methods
+        is_bio_certified:
+          type: boolean
+          default: false
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    ClientProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          maxLength: 100
+          nullable: true
+        wilaya:
+          type: string
+          maxLength: 100
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+        user_type:
+          type: string
+          enum: [producer, client]
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 20
+          nullable: true
+        is_active:
+          type: boolean
+        is_verified:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        producer_profile:
+          allOf:
+            - $ref: '#/components/schemas/ProducerProfile'
+          nullable: true
+        client_profile:
+          allOf:
+            - $ref: '#/components/schemas/ClientProfile'
+          nullable: true
+
+    RegisterProducer:
+      type: object
+      required:
+        - email
+        - password
+        - first_name
+        - last_name
+        - shop_name
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: Must contain at least one digit and one uppercase letter
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 20
+        shop_name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        photo_url:
+          type: string
+          format: uri
+        address:
+          type: string
+        city:
+          type: string
+          maxLength: 100
+        wilaya:
+          type: string
+          maxLength: 100
+        methods:
+          type: string
+        is_bio_certified:
+          type: boolean
+          default: false
+
+    RegisterClient:
+      type: object
+      required:
+        - email
+        - password
+        - first_name
+        - last_name
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: Must contain at least one digit and one uppercase letter
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+        city:
+          type: string
+          maxLength: 100
+        wilaya:
+          type: string
+          maxLength: 100
+
+    Login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    TokenPair:
+      type: object
+      properties:
+        refresh:
+          type: string
+          description: Refresh token (valid for 7 days)
+        access:
+          type: string
+          description: Access token (valid for 1 hour)
+
+    AuthResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        tokens:
+          $ref: '#/components/schemas/TokenPair'
+
+    ProducerInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        shop_name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        photo_url:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        wilaya:
+          type: string
+          nullable: true
+        is_bio_certified:
+          type: boolean
+        user_id:
+          type: integer
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+
+    ProductList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+        price:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        sale_type:
+          type: string
+          enum: [unit, weight]
+          description: "unit: sold by piece, weight: sold by kg"
+        stock:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        product_type:
+          type: string
+          enum: [fresh, dry]
+        is_anti_gaspi:
+          type: boolean
+          description: Anti-waste discount flag
+        harvest_date:
+          type: string
+          format: date
+          nullable: true
+        producer_id:
+          type: integer
+          readOnly: true
+        producer_name:
+          type: string
+          readOnly: true
+
+    ProductDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+        sale_type:
+          type: string
+          enum: [unit, weight]
+        price:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        stock:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        product_type:
+          type: string
+          enum: [fresh, dry]
+        harvest_date:
+          type: string
+          format: date
+          nullable: true
+        is_anti_gaspi:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        producer:
+          $ref: '#/components/schemas/ProducerInfo'
+
+    ProductCreateUpdate:
+      type: object
+      required:
+        - name
+        - sale_type
+        - price
+        - stock
+        - product_type
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        photo_url:
+          type: string
+          format: uri
+        sale_type:
+          type: string
+          enum: [unit, weight]
+        price:
+          type: number
+          format: decimal
+          minimum: 0.01
+          multipleOf: 0.01
+        stock:
+          type: number
+          format: decimal
+          minimum: 0
+          multipleOf: 0.01
+        product_type:
+          type: string
+          enum: [fresh, dry]
+        harvest_date:
+          type: string
+          format: date
+          description: Required for fresh products
+        is_anti_gaspi:
+          type: boolean
+          default: false
+
+    ProductListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+        filters:
+          type: object
+          additionalProperties: true
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductList'
+
+    ProducerShopResponse:
+      type: object
+      properties:
+        shop:
+          type: object
+          properties:
+            id:
+              type: integer
+            shop_name:
+              type: string
+            description:
+              type: string
+            photo_url:
+              type: string
+            city:
+              type: string
+            wilaya:
+              type: string
+            is_bio_certified:
+              type: boolean
+        products_count:
+          type: integer
+        filters:
+          type: object
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductList'
+
+paths:
+  /auth/register/producer/:
+    post:
+      tags:
+        - Authentication
+      summary: Register as producer
+      description: Create a new producer account with shop profile
+      operationId: registerProducer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterProducer'
+      responses:
+        '201':
+          description: Producer registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation error or email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/register/client/:
+    post:
+      tags:
+        - Authentication
+      summary: Register as client
+      description: Create a new client account
+      operationId: registerClient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterClient'
+      responses:
+        '201':
+          description: Client registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation error or email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login/:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: Login with email and password to get JWT tokens
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials or deactivated account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout/:
+    post:
+      tags:
+        - Authentication
+      summary: Logout
+      description: Logout current user (client should delete tokens)
+      operationId: logout
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/me/:
+    get:
+      tags:
+        - Users
+      summary: Get current user
+      description: Get authenticated user profile with permissions
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/User'
+                  - type: object
+                    properties:
+                      permissions:
+                        type: object
+                        properties:
+                          can_create_products:
+                            type: boolean
+                          can_manage_shop:
+                            type: boolean
+                          can_view_sales:
+                            type: boolean
+                          can_place_orders:
+                            type: boolean
+                          can_add_to_cart:
+                            type: boolean
+                          can_view_purchases:
+                            type: boolean
+                          is_producer:
+                            type: boolean
+                          is_client:
+                            type: boolean
+                          user_type:
+                            type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /producers/:
+    get:
+      tags:
+        - Producers
+      summary: List all producers
+      description: Get list of all producers with optional filters
+      operationId: listProducers
+      parameters:
+        - name: city
+          in: query
+          description: Filter by city
+          schema:
+            type: string
+        - name: wilaya
+          in: query
+          description: Filter by wilaya (province)
+          schema:
+            type: string
+        - name: is_bio_certified
+          in: query
+          description: Filter by bio certification
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Producers list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  filters:
+                    type: object
+                    properties:
+                      city:
+                        type: string
+                      wilaya:
+                        type: string
+                      is_bio_certified:
+                        type: boolean
+                  producers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProducerProfile'
+
+  /producers/{id}/:
+    get:
+      tags:
+        - Producers
+      summary: Get producer detail
+      description: Get single producer profile by ID
+      operationId: getProducerDetail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Producer ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producer detail retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProducerProfile'
+        '404':
+          description: Producer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /products/:
+    get:
+      tags:
+        - Products
+      summary: List products
+      description: Get homepage products with filters and random order
+      operationId: listProducts
+      parameters:
+        - name: product_type
+          in: query
+          description: Filter by product type
+          schema:
+            type: string
+            enum: [fresh, dry]
+        - name: is_anti_gaspi
+          in: query
+          description: Filter by anti-gaspi status
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          description: Number of products to return
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+
+  /products/{id}/:
+    get:
+      tags:
+        - Products
+      summary: Get product detail
+      description: Get single product with full details including producer info
+      operationId: getProductDetail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product detail retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetail'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /products/search/:
+    get:
+      tags:
+        - Products
+      summary: Search products
+      description: Search products by name or description
+      operationId: searchProducts
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+        - name: product_type
+          in: query
+          description: Filter by product type
+          schema:
+            type: string
+            enum: [fresh, dry]
+        - name: is_anti_gaspi
+          in: query
+          description: Filter by anti-gaspi status
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Search results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                  count:
+                    type: integer
+                  filters:
+                    type: object
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductList'
+        '400':
+          description: Query parameter required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /products/filter/:
+    get:
+      tags:
+        - Products
+      summary: Filter products
+      description: Filter products by multiple criteria
+      operationId: filterProducts
+      parameters:
+        - name: sale_type
+          in: query
+          schema:
+            type: string
+            enum: [unit, weight]
+        - name: product_type
+          in: query
+          schema:
+            type: string
+            enum: [fresh, dry]
+        - name: is_anti_gaspi
+          in: query
+          schema:
+            type: boolean
+        - name: min_price
+          in: query
+          schema:
+            type: number
+        - name: max_price
+          in: query
+          schema:
+            type: number
+        - name: wilaya
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Filtered products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  filters_applied:
+                    type: object
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductList'
+
+  /products/producer/{producer_id}/:
+    get:
+      tags:
+        - Products
+      summary: Get producer shop
+      description: Get all products from a specific producer
+      operationId: getProducerShop
+      parameters:
+        - name: producer_id
+          in: path
+          required: true
+          description: Producer ID
+          schema:
+            type: integer
+        - name: product_type
+          in: query
+          schema:
+            type: string
+            enum: [fresh, dry]
+        - name: is_anti_gaspi
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Producer shop retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProducerShopResponse'
+        '404':
+          description: Producer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /my-products/:
+    get:
+      tags:
+        - My Products
+      summary: List my products
+      description: Get all products belonging to authenticated producer
+      operationId: listMyProducts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: product_type
+          in: query
+          schema:
+            type: string
+            enum: [fresh, dry]
+        - name: is_anti_gaspi
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: My products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Only producers can access
+
+    post:
+      tags:
+        - My Products
+      summary: Create product
+      description: Create a new product (producer only)
+      operationId: createProduct
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateUpdate'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  product:
+                    $ref: '#/components/schemas/ProductList'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Only producers can create products
+
+  /my-products/{id}/:
+    get:
+      tags:
+        - My Products
+      summary: Get my product detail
+      description: Get single product detail (only if owned by producer)
+      operationId: getMyProductDetail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product detail retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        '404':
+          description: Product not found or no permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+    put:
+      tags:
+        - My Products
+      summary: Update product
+      description: Fully update a product (producer only)
+      operationId: updateProduct
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateUpdate'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  product:
+                    $ref: '#/components/schemas/ProductList'
+        '400':
+          description: Validation error
+        '404':
+          description: Product not found or no permission
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+    patch:
+      tags:
+        - My Products
+      summary: Partially update product
+      description: Update specific fields of a product (producer only)
+      operationId: partialUpdateProduct
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                stock:
+                  type: number
+                is_anti_gaspi:
+                  type: boolean
+              minProperties: 1
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  product:
+                    $ref: '#/components/schemas/ProductList'
+        '400':
+          description: Validation error
+        '404':
+          description: Product not found or no permission
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+    delete:
+      tags:
+        - My Products
+      summary: Delete product
+      description: Delete a product (producer only)
+      operationId: deleteProduct
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Product not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /my-products/{id}/toggle-anti-gaspi/:
+    post:
+      tags:
+        - My Products
+      summary: Toggle anti-gaspi status
+      description: Toggle the anti-gaspi (anti-waste) flag for a product
+      operationId: toggleAntiGaspi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Anti-gaspi status toggled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  product:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      is_anti_gaspi:
+                        type: boolean
+        '404':
+          description: Product not found or no permission
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
